@@ -1,3 +1,5 @@
+using System.Text.Json;
+using Azure.Messaging.ServiceBus;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Azure.Functions.Worker;
@@ -11,7 +13,7 @@ namespace IntegrationWorks.Function
     }
     public class DeliveryUpdate
     {
-        public required Date Time { get; set; }
+        public required DateTime Time { get; set; }
         public required string Status { get; set; }
     }
     public class delivery_update
@@ -24,17 +26,17 @@ namespace IntegrationWorks.Function
         }
 
         [Function("delivery_update")]
-        public IActionResult Run([HttpTrigger(AuthorizationLevel.Anonymous, "post")] HttpRequest req)
+        public async Task<IActionResult> RunAsync([HttpTrigger(AuthorizationLevel.Anonymous, "post")] HttpRequest req)
         {
             DeliveryStatus deliveryStatus;
             try
             {
-                deliveryUpdate = JsonSerializer.Deserialize<DeliveryStatus>(req.Body);
+                deliveryStatus = JsonSerializer.Deserialize<DeliveryStatus>(req.Body);
             }
             catch (Exception ex)
             {
                 _logger.LogError("Incorrectly formatted request Body", ex);
-                return BadRequest("Incorrectly formatted request Body");
+                return new OkObjectResult("Incorrectly formatted request Body");
             }
 
             string? connectionString = Environment.GetEnvironmentVariable("DELIVERY_UPDATE_QUEUE_KEY");
@@ -54,7 +56,7 @@ namespace IntegrationWorks.Function
             if (!messageBatch.TryAddMessage(new ServiceBusMessage(JsonSerializer.Serialize(deliveryUpdate))))
             {
 
-                throw new Exception($"Exception {deliveryUpdate} has ocurred.");
+                _logger.LogError($"Exception {deliveryUpdate} has ocurred.");
             }
 
             try
