@@ -28,11 +28,18 @@ namespace IntegrationWorks.Function
         [Function("delivery_update")]
         public async Task<IActionResult> RunAsync([HttpTrigger(AuthorizationLevel.Anonymous, "post")] HttpRequest req)
         {
-            _logger.LogDebug(req.Body.ToString());
+
+            string requestBody;
+            using (StreamReader reader = new StreamReader(req.Body))
+            {
+                requestBody = await reader.ReadToEndAsync();
+            }
+
+            _logger.LogDebug(requestBody);
             DeliveryStatus? deliveryStatus;
             try
             {
-                deliveryStatus = JsonSerializer.Deserialize<DeliveryStatus>(req.Body.ToString());
+                deliveryStatus = JsonSerializer.Deserialize<DeliveryStatus>(requestBody);
             }
             catch (Exception ex)
             {
