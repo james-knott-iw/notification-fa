@@ -70,7 +70,7 @@ namespace IntegrationWorks.Function
             {
                 try
                 {
-                    DeliveryUpdate deliveryUpdate = JsonSerializer.Deserialize<DeliveryUpdate>(body);
+                    DeliveryUpdate? deliveryUpdate = JsonSerializer.Deserialize<DeliveryUpdate>(body);
                     if (deliveryUpdate != null)
                     {
                         string status = deliveryUpdate.Status;

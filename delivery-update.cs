@@ -28,7 +28,7 @@ namespace IntegrationWorks.Function
         [Function("delivery_update")]
         public async Task<IActionResult> RunAsync([HttpTrigger(AuthorizationLevel.Anonymous, "post")] HttpRequest req)
         {
-            DeliveryStatus deliveryStatus;
+            DeliveryStatus? deliveryStatus;
             try
             {
                 deliveryStatus = JsonSerializer.Deserialize<DeliveryStatus>(req.Body);
