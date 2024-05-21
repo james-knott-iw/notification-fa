@@ -35,6 +35,7 @@ namespace IntegrationWorks.Function
             }
             catch (Exception ex)
             {
+                _logger.LogError(ex.Message);
                 _logger.LogError("Incorrectly formatted request Body", ex);
                 return new OkObjectResult("Incorrectly formatted request Body");
             }
