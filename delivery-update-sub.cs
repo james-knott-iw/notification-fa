@@ -22,10 +22,8 @@ namespace IntegrationWorks.Function
         [Function(nameof(delivery_update_sub))]
         public async Task RunAsync([EventGridTrigger] CloudEvent cloudEvent)
         {
-
-
             string? connectionString = Environment.GetEnvironmentVariable("DELIVERY_UPDATE_QUEUE_KEY");
-            string queueName = "delivery-update-queue";
+            string? queueName = Environment.GetEnvironmentVariable("DELIVERY_UPDATE_QUEUE_NAME");
             ServiceBusClient client;
             ServiceBusProcessor processor;
             client = new ServiceBusClient(connectionString);
@@ -58,14 +56,13 @@ namespace IntegrationWorks.Function
                 await client.DisposeAsync();
                 _logger.LogInformation("Disposing of processor and client!");
             }
-
         }
         // handle received messages
         async Task MessageHandler(ProcessMessageEventArgs args)
         {
             _logger.LogInformation("IN MESSAGE HANDLER");
-
             string body = args.Message.Body.ToString();
+
             if (body != null)
             {
                 try
